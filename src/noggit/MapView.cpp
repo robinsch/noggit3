@@ -3041,7 +3041,13 @@ void MapView::save(save_mode mode)
     first_warning.setIcon(QMessageBox::Critical);
     first_warning.setWindowIcon(QIcon (":/icon"));
     first_warning.setWindowTitle("Some models couldn't be loaded");
-    first_warning.setText("Error:\nSome models could not be loaded and saving will cause collision and culling issues, would you still like to save ?");
+
+    QString model_names;
+    for (std::string const& model_name : AsyncLoader::instance().name_important_object_failed_loading())
+        model_names += QString(model_name.c_str()) + '\n';
+
+    first_warning.setText("Error:\Following models could not be loaded and saving will cause collision and culling issues, would you still like to save ?\n" + model_names);
+
     // roles are swapped to force the user to pay attention and both are "accept" roles so that escape does nothing
     no = first_warning.addButton("No", QMessageBox::ButtonRole::AcceptRole);
     yes = first_warning.addButton("Yes", QMessageBox::ButtonRole::YesRole);

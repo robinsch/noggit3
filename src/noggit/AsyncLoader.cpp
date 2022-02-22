@@ -80,6 +80,7 @@ void AsyncLoader::process()
       if (object->is_required_when_saving())
       {
         _important_object_failed_loading = true;
+        _names_important_object_failed_loading.push_back(object->filename);
       }
     }
   }

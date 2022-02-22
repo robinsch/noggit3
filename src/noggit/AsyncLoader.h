@@ -10,6 +10,8 @@
 #include <list>
 #include <memory>
 #include <thread>
+#include <vector>
+#include <string>
 
 class AsyncLoader
 {
@@ -30,7 +32,8 @@ public:
   ~AsyncLoader();
 
   bool important_object_failed_loading() const { return _important_object_failed_loading; }
-  void reset_object_fail() { _important_object_failed_loading = false; }
+  std::vector<std::string> const& name_important_object_failed_loading() const { return _names_important_object_failed_loading; }
+  void reset_object_fail() { _important_object_failed_loading = false; _names_important_object_failed_loading.clear(); }
 
 private:
   void process();
@@ -42,4 +45,5 @@ private:
   std::list<AsyncObject*> _currently_loading;
   std::list<std::thread> _threads;
   bool _important_object_failed_loading = false;
+  std::vector<std::string> _names_important_object_failed_loading;
 };
