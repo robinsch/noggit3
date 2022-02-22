@@ -594,6 +594,8 @@ namespace noggit
         }
 
         replace_selection(selected_model);
+
+        main_window::instance()->selected_global.clear();
     }
 
     void object_editor::copy_current_selection(World* world)
