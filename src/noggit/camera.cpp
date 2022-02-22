@@ -9,7 +9,7 @@ namespace noggit
                  , math::degrees pitch_
                  )
     : position (position_)
-    , move_speed (200.6f)
+    , move_speed (50.f)
     , _roll (0.0f)
     , _yaw (0.f)
     , _pitch (0.f)
