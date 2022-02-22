@@ -272,6 +272,7 @@ private:
   noggit::bool_toggle_property _rotate_along_ground = { true };
   noggit::bool_toggle_property _rotate_along_ground_smooth = { true };
   noggit::bool_toggle_property _rotate_along_ground_random = { false };
+  noggit::bool_toggle_property _rotate_fixed = { true };
 
   noggit::bool_toggle_property _use_median_pivot_point = {true};
   noggit::bool_toggle_property _display_all_water_layers = {true};

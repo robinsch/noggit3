@@ -187,7 +187,7 @@ public:
   void rotate_selected_models_randomly(float minX, float maxX, float minY, float maxY, float minZ, float maxZ);
   void set_selected_models_rotation(math::degrees rx, math::degrees ry, math::degrees rz);
   // Checks the normal of the terrain on model origin and rotates to that spot.
-  void rotate_selected_models_to_ground_normal(bool smoothNormals);
+  void rotate_selected_models_to_ground_normal(bool smoothNormals, bool fixedRotation);
 
   bool GetVertex(float x, float z, math::vector_3d *V) const;
   boost::optional<float> get_exact_height_at(math::vector_3d const& pos);

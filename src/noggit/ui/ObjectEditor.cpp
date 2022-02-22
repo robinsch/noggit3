@@ -44,6 +44,7 @@ namespace noggit
             , bool_toggle_property* rotate_along_ground
             , bool_toggle_property* rotate_along_ground_smooth
             , bool_toggle_property* rotate_along_ground_random
+            , bool_toggle_property* rotate_fixed
             , QWidget* parent
         )
             : QWidget(parent)
@@ -187,9 +188,15 @@ namespace noggit
                 , this
             )
             );
+            auto object_rotatefixed_cb(new checkbox("Fixed rotation"
+                , rotate_fixed
+                , this
+            )
+            );
             object_rot_layout->addRow(object_rotateground_cb);
             object_rot_layout->addRow(object_rotategroundsmooth_cb);
             object_rot_layout->addRow(object_rotategroundrandom_cb);
+            object_rot_layout->addRow(object_rotatefixed_cb);
 
             QPushButton* rotEditorButton = new QPushButton("Pos/Rotation Editor", this);
             QPushButton* visToggleButton = new QPushButton("Toggle Hidden Models Visibility", this);

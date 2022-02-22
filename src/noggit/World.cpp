@@ -607,7 +607,7 @@ namespace
   }
 }
 
-void World::rotate_selected_models_to_ground_normal(bool smoothNormals)
+void World::rotate_selected_models_to_ground_normal(bool smoothNormals, bool fixedRotation)
 {
   for (auto& entry : _current_selection)
   {
@@ -630,6 +630,8 @@ void World::rotate_selected_models_to_ground_normal(bool smoothNormals)
       ? boost::get<selected_model_type>(entry)->dir
       : boost::get<selected_wmo_type>(entry)->dir
       ;
+
+    math::degrees prev_rotation = dir.y;
 
     selection_result results;
     for_chunk_at(rayPos, [&](MapChunk* chunk)
@@ -710,6 +712,10 @@ void World::rotate_selected_models_to_ground_normal(bool smoothNormals)
 
     // To euler, because wow
     dir = q.ToEulerAngles();
+
+    // @robinsch: reset rotation to previous values
+    if (fixedRotation)
+        dir.y = prev_rotation;
 
     if (entry_is_m2)
     {

@@ -276,6 +276,7 @@ void MapView::createGUI()
     , &_rotate_along_ground
     , &_rotate_along_ground_smooth
     , &_rotate_along_ground_random
+    , &_rotate_fixed
     , _object_editor_dock
   );
   _object_editor_dock->setWidget(objectEditor);
@@ -1748,7 +1749,7 @@ void MapView::tick (float dt)
 
           if (snapped && _rotate_along_ground.get())
           {
-            _world->rotate_selected_models_to_ground_normal(_rotate_along_ground_smooth.get());
+            _world->rotate_selected_models_to_ground_normal(_rotate_along_ground_smooth.get(), _rotate_fixed.get());
             if (_rotate_along_ground_random.get())
             {
 	      float minX = 0, maxX = 0, minY = 0, maxY = 0, minZ = 0, maxZ = 0;
