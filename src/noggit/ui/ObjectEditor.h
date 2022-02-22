@@ -74,6 +74,7 @@ namespace noggit
                        , math::vector_3d camera_pos
                        , World*
                        , object_paste_params*
+                       , bool select_pasted_objects
                        );
       void togglePasteMode();
 

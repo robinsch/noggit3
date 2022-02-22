@@ -391,9 +391,13 @@ namespace noggit
                                     , math::vector_3d camera_pos
                                     , World* world
                                     , object_paste_params* paste_params
+                                    , bool select_pasted_objects
                                     )
     {
       auto last_entry = world->get_last_selected_model();
+
+      if (select_pasted_objects)
+        world->reset_selection();
 
       for (auto& selection : selected)
       {
@@ -450,12 +454,15 @@ namespace noggit
             rotation = boost::get<selected_model_type>(selection)->dir;
           }
 
-          world->addM2( boost::get<selected_model_type>(selection)->model->filename
+          ModelInstance* mi = world->addM2( boost::get<selected_model_type>(selection)->model->filename
                       , pos
                       , scale
                       , rotation
                       , paste_params
                       );
+
+          if (select_pasted_objects)
+            world->add_to_selection(mi);
         }
         else if (selection.which() == eEntry_WMO)
         {
@@ -466,7 +473,10 @@ namespace noggit
             rotation = boost::get<selected_wmo_type>(selection)->dir;
           }
 
-          world->addWMO(boost::get<selected_wmo_type>(selection)->wmo->filename, pos, rotation);
+          WMOInstance* wi =world->addWMO(boost::get<selected_wmo_type>(selection)->wmo->filename, pos, rotation);
+
+          if (select_pasted_objects)
+            world->add_to_selection(wi);
         }        
       }
     }

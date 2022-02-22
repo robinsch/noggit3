@@ -965,12 +965,12 @@ void MapView::createGUI()
 
   addHotkey ( Qt::Key_V
             , MOD_ctrl
-            , [this] { objectEditor->pasteObject (_cursor_pos, _camera.position, _world.get(), &_object_paste_params); }
+            , [this] { objectEditor->pasteObject (_cursor_pos, _camera.position, _world.get(), &_object_paste_params, true); }
             , [this] { return terrainMode == editing_mode::object; }
             );
   addHotkey ( Qt::Key_V
             , MOD_none
-            , [this] { objectEditor->pasteObject (_cursor_pos, _camera.position, _world.get(), &_object_paste_params); }
+            , [this] { objectEditor->pasteObject (_cursor_pos, _camera.position, _world.get(), &_object_paste_params, false); }
             , [this] { return terrainMode == editing_mode::object; }
             );
   addHotkey ( Qt::Key_V
@@ -995,7 +995,7 @@ void MapView::createGUI()
 	         , [this] 
              {
                objectEditor->copy_current_selection(_world.get());
-	             objectEditor->pasteObject(_cursor_pos, _camera.position, _world.get(), &_object_paste_params);
+	             objectEditor->pasteObject(_cursor_pos, _camera.position, _world.get(), &_object_paste_params, false);
              }
            , [this] { return terrainMode == editing_mode::object; }
            );
