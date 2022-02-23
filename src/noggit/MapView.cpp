@@ -105,7 +105,12 @@ void MapView::history_undo()
         {
             for (std::vector<object_editor_history>::const_iterator it = undo->begin(); it != undo->end(); ++it)
             {
-                _world->move_model(it->uid, it->pos, it->dir);
+                switch (it->action)
+                {
+                    case object_editor_action::move:
+                        _world->move_model(it->uid, it->pos, it->dir);
+                        break;
+                }
             }
         }
     }
@@ -120,7 +125,12 @@ void MapView::history_redo()
         {
             for (std::vector<object_editor_history>::const_iterator it = redo->begin(); it != redo->end(); ++it)
             {
-                _world->move_model(it->uid, it->pos, it->dir);
+                switch (it->action)
+                {
+                    case object_editor_action::move:
+                        _world->move_model(it->uid, it->pos, it->dir);
+                        break;
+                }
             }
         }
     }
@@ -151,11 +161,12 @@ void MapView::begin_moving()
                 : boost::get<selected_wmo_type>(selection)->dir
                 ;
 
-            object_editor_history entry;
-            entry.uid = uid;
-            entry.pos = pos;
-            entry.dir = dir;
-            move.push_back(entry);
+            object_editor_history elem;
+            elem.action = object_editor_action::move;
+            elem.uid = uid;
+            elem.pos = pos;
+            elem.dir = dir;
+            move.push_back(elem);
         }
 
         history.add(move);
@@ -187,11 +198,12 @@ void MapView::release_moving()
                 : boost::get<selected_wmo_type>(selection)->dir
                 ;
 
-            object_editor_history entry;
-            entry.uid = uid;
-            entry.pos = pos;
-            entry.dir = dir;
-            move.push_back(entry);
+            object_editor_history elem;
+            elem.action = object_editor_action::move;
+            elem.uid = uid;
+            elem.pos = pos;
+            elem.dir = dir;
+            move.push_back(elem);
         }
 
         history.add(move);
@@ -265,22 +277,20 @@ void MapView::snap_selected_models_to_the_ground()
   _rotation_editor_need_update = true;
 }
 
-
 void MapView::DeleteSelectedObject()
 {
+  before_delete_selected_objects();
+
   makeCurrent();
   opengl::context::scoped_setter const _ (::gl, context());
-
   _world->delete_selected_models();
   _rotation_editor_need_update = true;
 }
-
 
 void MapView::changeZoneIDValue (int set)
 {
   _selected_area_id = set;
 }
-
 
 QWidgetAction* MapView::createTextSeparator(const QString& text)
 {

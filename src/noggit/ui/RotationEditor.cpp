@@ -293,8 +293,8 @@ namespace noggit
             {
                 auto model = boost::get<selected_model_type>(selection);
 
-
                 object_editor_history elem;
+                elem.action = object_editor_action::move;
                 elem.uid = model->uid;
                 elem.pos = model->pos;
                 elem.dir = model->dir;
@@ -308,6 +308,7 @@ namespace noggit
                 std::vector<object_editor_history> history;
 
                 object_editor_history elem;
+                elem.action = object_editor_action::move;
                 elem.uid = wmo->mUniqueID;
                 elem.pos = wmo->pos;
                 elem.dir = wmo->dir;
@@ -337,6 +338,7 @@ namespace noggit
                 std::vector<object_editor_history> history;
 
                 object_editor_history elem;
+                elem.action = object_editor_action::move;
                 elem.uid = model->uid;
                 elem.pos = model->pos;
                 elem.dir = model->dir;
@@ -350,6 +352,7 @@ namespace noggit
                 std::vector<object_editor_history> history;
 
                 object_editor_history elem;
+                elem.action = object_editor_action::move;
                 elem.uid = wmo->mUniqueID;
                 elem.pos = wmo->pos;
                 elem.dir = wmo->dir;

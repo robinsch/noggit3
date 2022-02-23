@@ -35,8 +35,16 @@ enum ModelPasteMode
   PASTE_MODE_COUNT
 };
 
+enum class object_editor_action : std::uint8_t
+{
+    move,
+    remove,
+    add
+};
+
 struct object_editor_history
 {
+    object_editor_action action;
     std::uint32_t uid;
     math::degrees::vec3 dir;
     math::vector_3d pos;
