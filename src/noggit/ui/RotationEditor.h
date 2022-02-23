@@ -16,15 +16,23 @@ namespace noggit
 {
   namespace ui
   {
+    class object_editor;
+
     class rotation_editor : public QWidget
     {
     public:
-      rotation_editor(QWidget* parent, World* world);
+      rotation_editor(QWidget* parent, World* world, noggit::ui::object_editor* object_editor_);
 
       bool* use_median_pivot_point;
 
       void updateValues(World* world);
+
+      void showEvent(QShowEvent* event_) override;
+      void hideEvent(QHideEvent* event_) override;
     private:
+        World* _world;
+        object_editor* _object_editor;
+
       // for single selection
       void set_model_rotation(World* world);
       // for multi selection

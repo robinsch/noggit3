@@ -2,6 +2,7 @@
 
 #include <noggit/ui/RotationEditor.h>
 
+#include <noggit/MapView.h>
 #include <noggit/Misc.h>
 #include <noggit/ModelInstance.h>
 #include <noggit/Selection.h>
@@ -17,8 +18,8 @@ namespace noggit
 {
   namespace ui
   {
-    rotation_editor::rotation_editor(QWidget* parent, World* world)
-      : QWidget (parent)
+    rotation_editor::rotation_editor(QWidget* parent, World* world, noggit::ui::object_editor* object_editor_)
+      : QWidget (parent), _world(world), _object_editor(object_editor_)
     {
       setWindowTitle("Pos/Rotation Editor");
       setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint);
@@ -274,6 +275,90 @@ namespace noggit
           _scale->setValue(1.f);
         }
       }
+    }
+
+    void rotation_editor::showEvent(QShowEvent* event_)
+    {
+        if (_world->has_multiple_model_selected())
+            return;
+
+        std::vector<object_editor_history> history;
+
+        auto entry = _world->get_last_selected_model();
+        if (entry)
+        {
+            selection_type selection = entry.get();
+
+            if (selection.which() == eEntry_Model)
+            {
+                auto model = boost::get<selected_model_type>(selection);
+
+
+                object_editor_history elem;
+                elem.uid = model->uid;
+                elem.pos = model->pos;
+                elem.dir = model->dir;
+
+                history.push_back({ elem });
+            }
+            else // we know it's a wmo
+            {
+                auto wmo = boost::get<selected_wmo_type>(selection);
+
+                std::vector<object_editor_history> history;
+
+                object_editor_history elem;
+                elem.uid = wmo->mUniqueID;
+                elem.pos = wmo->pos;
+                elem.dir = wmo->dir;
+
+                history.push_back({ elem });
+            }
+        }
+
+        _object_editor->get_history().add(history);
+    }
+
+    void rotation_editor::hideEvent(QHideEvent* event_)
+    {
+        if (_world->has_multiple_model_selected())
+            return;
+
+        std::vector<object_editor_history> history;
+
+        auto entry = _world->get_last_selected_model();
+        if (entry)
+        {
+            selection_type selection = entry.get();
+
+            if (selection.which() == eEntry_Model)
+            {
+                auto model = boost::get<selected_model_type>(selection);
+                std::vector<object_editor_history> history;
+
+                object_editor_history elem;
+                elem.uid = model->uid;
+                elem.pos = model->pos;
+                elem.dir = model->dir;
+
+                history.push_back({ elem });
+            }
+            else // we know it's a wmo
+            {
+                auto wmo = boost::get<selected_wmo_type>(selection);
+
+                std::vector<object_editor_history> history;
+
+                object_editor_history elem;
+                elem.uid = wmo->mUniqueID;
+                elem.pos = wmo->pos;
+                elem.dir = wmo->dir;
+
+                history.push_back({ elem });
+            }
+        }
+
+        _object_editor->get_history().add(history);
     }
 
     void rotation_editor::set_model_rotation(World* world)
