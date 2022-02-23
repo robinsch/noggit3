@@ -4,6 +4,7 @@
 #include <math/constants.hpp>
 #include <noggit/Brush.h> // brush
 #include <noggit/DBC.h>
+#include <noggit/history.hpp>
 #include <noggit/Log.h>
 #include <noggit/MapChunk.h>
 #include <noggit/MapView.h>
@@ -93,6 +94,108 @@ void MapView::set_editing_mode (editing_mode mode)
 
   terrainMode = mode;
   _toolbar->check_tool (mode);
+}
+
+void MapView::history_undo()
+{
+    if (terrainMode == editing_mode::object)
+    {
+        noggit::history<std::vector<object_editor_history>>& history = objectEditor->get_history();
+        if (std::vector<object_editor_history> const* undo = history.undo())
+        {
+            for (std::vector<object_editor_history>::const_iterator it = undo->begin(); it != undo->end(); ++it)
+            {
+                _world->move_model(it->uid, it->pos, it->dir);
+            }
+        }
+    }
+}
+
+void MapView::history_redo()
+{
+    if (terrainMode == editing_mode::object)
+    {
+        noggit::history<std::vector<object_editor_history>>& history = objectEditor->get_history();
+        if (std::vector<object_editor_history> const* redo = history.redo())
+        {
+            for (std::vector<object_editor_history>::const_iterator it = redo->begin(); it != redo->end(); ++it)
+            {
+                _world->move_model(it->uid, it->pos, it->dir);
+            }
+        }
+    }
+}
+
+void MapView::begin_moving()
+{
+    if (terrainMode == editing_mode::object)
+    {
+        noggit::history<std::vector<object_editor_history>>& history = objectEditor->get_history();
+
+        std::vector<object_editor_history> move;
+
+        for (auto& selection : _world->current_selection())
+        {
+            std::uint32_t uid = selection.which() == eEntry_Model
+                ? boost::get<selected_model_type>(selection)->uid
+                : boost::get<selected_wmo_type>(selection)->mUniqueID
+                ;
+
+            math::vector_3d pos = selection.which() == eEntry_Model
+                ? boost::get<selected_model_type>(selection)->pos
+                : boost::get<selected_wmo_type>(selection)->pos
+                ;
+
+            math::degrees::vec3 dir = selection.which() == eEntry_Model
+                ? boost::get<selected_model_type>(selection)->dir
+                : boost::get<selected_wmo_type>(selection)->dir
+                ;
+
+            object_editor_history entry;
+            entry.uid = uid;
+            entry.pos = pos;
+            entry.dir = dir;
+            move.push_back(entry);
+        }
+
+        history.add(move);
+    }
+}
+
+void MapView::release_moving()
+{
+    if (terrainMode == editing_mode::object)
+    {
+        noggit::history<std::vector<object_editor_history>>& history = objectEditor->get_history();
+
+        std::vector<object_editor_history> move;
+
+        for (auto& selection : _world->current_selection())
+        {
+            std::uint32_t uid = selection.which() == eEntry_Model
+                ? boost::get<selected_model_type>(selection)->uid
+                : boost::get<selected_wmo_type>(selection)->mUniqueID
+                ;
+
+            math::vector_3d pos = selection.which() == eEntry_Model
+                ? boost::get<selected_model_type>(selection)->pos
+                : boost::get<selected_wmo_type>(selection)->pos
+                ;
+
+            math::degrees::vec3 dir = selection.which() == eEntry_Model
+                ? boost::get<selected_model_type>(selection)->dir
+                : boost::get<selected_wmo_type>(selection)->dir
+                ;
+
+            object_editor_history entry;
+            entry.uid = uid;
+            entry.pos = pos;
+            entry.dir = dir;
+            move.push_back(entry);
+        }
+
+        history.add(move);
+    }
 }
 
 void MapView::setToolPropertyWidgetVisibility(editing_mode mode)
@@ -446,7 +549,7 @@ void MapView::createGUI()
    
   // create toolbar
 
-  _toolbar = new noggit::ui::toolbar([this] (editing_mode mode) { set_editing_mode (mode); });
+  _toolbar = new noggit::ui::toolbar([this](editing_mode mode) { set_editing_mode(mode); }, [this]() { history_undo(); }, [this]() { history_redo(); });
   _main_window->addToolBar(Qt::LeftToolBarArea, _toolbar);
   connect (this, &QObject::destroyed, _toolbar, &QObject::deleteLater);
 
@@ -1287,6 +1390,9 @@ void MapView::createGUI()
   addHotkey(Qt::Key_7, MOD_ctrl, [this] { change_selected_wmo_doodadset(7); });
   addHotkey(Qt::Key_8, MOD_ctrl, [this] { change_selected_wmo_doodadset(8); });
   addHotkey(Qt::Key_9, MOD_ctrl, [this] { change_selected_wmo_doodadset(9); });
+
+  addHotkey(Qt::Key_Z, MOD_ctrl, [this] { history_undo(); });
+  addHotkey(Qt::Key_Y, MOD_ctrl, [this] { history_redo(); });
 
   connect(_main_window, &noggit::ui::main_window::exit_prompt_opened, this, &MapView::on_exit_prompt);
 }
@@ -2900,6 +3006,8 @@ void MapView::mousePressEvent(QMouseEvent* event)
     if (_world->has_selection())
     {
       MoveObj = true;
+
+      begin_moving();
     }
 
     if(terrainMode == editing_mode::mccv)
@@ -3025,6 +3133,7 @@ void MapView::mouseReleaseEvent (QMouseEvent* event)
 
   case Qt::MiddleButton:
     MoveObj = false;
+    release_moving();
     break;
   }
 }

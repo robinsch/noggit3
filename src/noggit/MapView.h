@@ -205,6 +205,11 @@ public:
   void change_selected_wmo_doodadset(int set);
 
   void set_editing_mode (editing_mode);
+  void history_undo();
+  void history_redo();
+
+  void begin_moving();
+  void release_moving();
 
 private:
   enum Modifier

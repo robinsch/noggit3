@@ -5,6 +5,7 @@
 #include <math/vector_3d.hpp>
 #include <noggit/Selection.h>
 #include <noggit/bool_toggle_property.hpp>
+#include <noggit/history.hpp>
 
 #include <QLabel>
 #include <QWidget>
@@ -32,6 +33,13 @@ enum ModelPasteMode
   PASTE_ON_SELECTION,
   PASTE_ON_CAMERA,
   PASTE_MODE_COUNT
+};
+
+struct object_editor_history
+{
+    std::uint32_t uid;
+    math::degrees::vec3 dir;
+    math::vector_3d pos;
 };
 
 namespace noggit
@@ -84,6 +92,8 @@ namespace noggit
       helper_models* helper_models_widget;
       QSize sizeHint() const override;
 
+      noggit::history<std::vector<object_editor_history>>& get_history() { return _history; }
+
     private:
       QSettings* _settings;
 
@@ -101,6 +111,8 @@ namespace noggit
       void showImportModels();
       void SaveObjecttoTXT (World*);
       int pasteMode;
+
+      noggit::history<std::vector<object_editor_history>> _history;
     };
   }
 }

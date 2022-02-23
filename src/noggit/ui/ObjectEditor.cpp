@@ -55,6 +55,7 @@ namespace noggit
             , _copy_model_stats(true)
             , selected()
             , pasteMode(PASTE_ON_TERRAIN)
+            , _history()
         {
             auto layout = new QFormLayout(this);
 

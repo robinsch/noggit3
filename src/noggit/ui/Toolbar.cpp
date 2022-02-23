@@ -6,8 +6,8 @@ namespace noggit
 {
   namespace ui
   {
-    toolbar::toolbar(std::function<void (editing_mode)> set_editing_mode)
-      : _set_editing_mode (set_editing_mode)
+    toolbar::toolbar(std::function<void (editing_mode)> set_editing_mode, std::function<void()> history_undo, std::function<void()> history_redo)
+      : _set_editing_mode (set_editing_mode), _history_undo(history_undo), _history_redo(history_redo)
       , _tool_group(this)
     {
       add_tool_icon (editing_mode::ground,       tr("Raise / Lower"),   font_awesome::chartarea);
@@ -22,6 +22,9 @@ namespace noggit
 #ifdef NOGGIT_HAS_SCRIPTING
       add_tool_icon (editing_mode::scripting,    tr("Script Editor"),   font_awesome::book);
 #endif
+      addSeparator();
+      add_undo_icon(tr("Undo (Ctrl-Z)"), font_awesome::undo);
+      add_redo_icon(tr("Redo (Ctrl-Y)"), font_awesome::redo);
     }
 
     void toolbar::add_tool_icon(editing_mode mode, const QString& name, const font_awesome::icons& icon)
@@ -32,6 +35,22 @@ namespace noggit
       });
       action->setActionGroup(&_tool_group);
       action->setCheckable(true);
+    }
+
+    void toolbar::add_undo_icon(const QString& name, const font_awesome::icons& icon)
+    {
+        auto action = addAction(font_awesome_icon(icon), name);
+        connect(action, &QAction::triggered, [this]() {
+            _history_undo();
+            });
+    }
+
+    void toolbar::add_redo_icon(const QString& name, const font_awesome::icons& icon)
+    {
+        auto action = addAction(font_awesome_icon(icon), name);
+        connect(action, &QAction::triggered, [this]() {
+            _history_redo();
+            });
     }
 
     void toolbar::check_tool(editing_mode mode)

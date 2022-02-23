@@ -306,6 +306,7 @@ set ( noggit_root_headers
       src/noggit/cursor_render.hpp
       src/noggit/DBC.h
       src/noggit/DBCFile.h
+      src/noggit/history.hpp
       src/noggit/Log.h
       src/noggit/MPQ.h
       src/noggit/map_enums.hpp

@@ -189,6 +189,8 @@ public:
   // Checks the normal of the terrain on model origin and rotates to that spot.
   void rotate_selected_models_to_ground_normal(bool smoothNormals, bool fixedRotation);
 
+  void move_model(std::uint32_t uid, math::vector_3d const& pos, math::degrees::vec3 const& dir);
+
   bool GetVertex(float x, float z, math::vector_3d *V) const;
   boost::optional<float> get_exact_height_at(math::vector_3d const& pos);
 

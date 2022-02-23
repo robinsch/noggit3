@@ -730,6 +730,49 @@ void World::rotate_selected_models_to_ground_normal(bool smoothNormals, bool fix
   }
 }
 
+void World::move_model(std::uint32_t uid, math::vector_3d const& new_pos, math::degrees::vec3 const& new_dir)
+{
+    auto model = get_model(uid);
+    if (!model)
+        return;
+
+    selection_type entry = model.get();
+
+    auto type = entry.which();
+    if (type == eEntry_MapChunk)
+        return;
+
+    bool entry_is_m2 = type == eEntry_Model;
+
+    math::vector_3d& pos = entry_is_m2
+        ? boost::get<selected_model_type>(entry)->pos
+        : boost::get<selected_wmo_type>(entry)->pos
+        ;
+
+    math::degrees::vec3& dir = entry_is_m2
+        ? boost::get<selected_model_type>(entry)->dir
+        : boost::get<selected_wmo_type>(entry)->dir
+        ;
+
+    updateTilesEntry(entry, model_update::remove);
+
+    pos = new_pos;
+    dir = new_dir;
+
+    if (entry_is_m2)
+    {
+        boost::get<selected_model_type>(entry)->recalcExtents();
+    }
+    else
+    {
+        boost::get<selected_wmo_type>(entry)->recalcExtents();
+    }
+
+    updateTilesEntry(entry, model_update::add);
+
+    update_selection_pivot();
+}
+
 void World::initGlobalVBOs(GLuint* pDetailTexCoords, GLuint* pAlphaTexCoords)
 {
   if (!*pDetailTexCoords && !*pAlphaTexCoords)
