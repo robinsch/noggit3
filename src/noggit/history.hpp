@@ -17,7 +17,7 @@ public:
     {
     }
 
-    T const* undo()
+    T* undo()
     {
         if (_container.empty())
             return nullptr;
@@ -25,7 +25,7 @@ public:
         return &_container[_pos ? --_pos : _pos];
     }
 
-    T const* redo()
+    T* redo()
     {
         if (_container.empty())
             return nullptr;

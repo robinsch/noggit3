@@ -6,6 +6,8 @@
 #include <noggit/Selection.h>
 #include <noggit/bool_toggle_property.hpp>
 #include <noggit/history.hpp>
+#include <noggit/ModelInstance.h> // ModelInstance
+#include <noggit/WMOInstance.h>   // WMOInstance
 
 #include <QLabel>
 #include <QWidget>
@@ -44,10 +46,52 @@ enum class object_editor_action : std::uint8_t
 
 struct object_editor_history
 {
+    object_editor_history(selection_type entry, object_editor_action action_)
+    {
+        action = action_;
+        type = eSelectionEntryTypes(entry.which());
+
+        std::uint32_t uid_ = entry.which() == eEntry_Model
+            ? boost::get<selected_model_type>(entry)->uid
+            : boost::get<selected_wmo_type>(entry)->mUniqueID
+            ;
+
+        math::vector_3d pos_ = entry.which() == eEntry_Model
+            ? boost::get<selected_model_type>(entry)->pos
+            : boost::get<selected_wmo_type>(entry)->pos
+            ;
+
+        math::degrees::vec3 dir_ = entry.which() == eEntry_Model
+            ? boost::get<selected_model_type>(entry)->dir
+            : boost::get<selected_wmo_type>(entry)->dir
+            ;
+
+        std::string filename_ = entry.which() == eEntry_Model
+            ? boost::get<selected_model_type>(entry)->model->filename
+            : boost::get<selected_wmo_type>(entry)->wmo->filename
+            ;
+
+        float scale_ = entry.which() == eEntry_Model
+            ? boost::get<selected_model_type>(entry)->scale
+            : 1.f
+            ;
+
+        filename = filename_;
+        scale = scale_;
+        uid = uid_;
+        dir = dir_;
+        pos = pos_;
+        undo_once = true;
+    }
+
     object_editor_action action;
+    eSelectionEntryTypes type;
+    std::string filename;
+    float scale;
     std::uint32_t uid;
     math::degrees::vec3 dir;
     math::vector_3d pos;
+    bool undo_once;
 };
 
 namespace noggit

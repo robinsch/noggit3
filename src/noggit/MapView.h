@@ -211,6 +211,8 @@ public:
   void begin_moving();
   void release_moving();
 
+  void before_delete_selected_objects();
+
 private:
   enum Modifier
   {

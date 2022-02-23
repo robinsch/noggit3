@@ -101,15 +101,32 @@ void MapView::history_undo()
     if (terrainMode == editing_mode::object)
     {
         noggit::history<std::vector<object_editor_history>>& history = objectEditor->get_history();
-        if (std::vector<object_editor_history> const* undo = history.undo())
+        if (std::vector<object_editor_history>* undo = history.undo())
         {
-            for (std::vector<object_editor_history>::const_iterator it = undo->begin(); it != undo->end(); ++it)
+            for (std::vector<object_editor_history>::iterator it = undo->begin(); it != undo->end(); ++it)
             {
+                if (!it->undo_once)
+                    continue;
+
                 switch (it->action)
                 {
                     case object_editor_action::move:
                         _world->move_model(it->uid, it->pos, it->dir);
                         break;
+                    case object_editor_action::remove:
+                    {
+                        if (it->type == eEntry_Model)
+                        {
+                            noggit::object_paste_params p;
+                            _world->addM2(it->filename, it->pos, it->scale, it->dir, nullptr);
+                        }
+                        else if (it->type == eEntry_WMO)
+                            _world->addWMO(it->filename, it->pos, it->dir);
+
+                        // @robinsch: avoid duplicates on undo
+                        it->undo_once = false;
+                        break;
+                    }
                 }
             }
         }
@@ -129,6 +146,8 @@ void MapView::history_redo()
                 {
                     case object_editor_action::move:
                         _world->move_model(it->uid, it->pos, it->dir);
+                        break;
+                    case object_editor_action::remove:
                         break;
                 }
             }
@@ -161,12 +180,7 @@ void MapView::begin_moving()
                 : boost::get<selected_wmo_type>(selection)->dir
                 ;
 
-            object_editor_history elem;
-            elem.action = object_editor_action::move;
-            elem.uid = uid;
-            elem.pos = pos;
-            elem.dir = dir;
-            move.push_back(elem);
+            move.push_back(object_editor_history(selection, object_editor_action::move));
         }
 
         history.add(move);
@@ -198,16 +212,23 @@ void MapView::release_moving()
                 : boost::get<selected_wmo_type>(selection)->dir
                 ;
 
-            object_editor_history elem;
-            elem.action = object_editor_action::move;
-            elem.uid = uid;
-            elem.pos = pos;
-            elem.dir = dir;
-            move.push_back(elem);
+            move.push_back(object_editor_history(selection, object_editor_action::move));
         }
 
         history.add(move);
     }
+}
+
+void MapView::before_delete_selected_objects()
+{
+    noggit::history<std::vector<object_editor_history>>& history = objectEditor->get_history();
+
+    std::vector<object_editor_history> deletions;
+
+    for (auto& selection : _world->current_selection())
+        deletions.push_back(object_editor_history(selection, object_editor_action::remove));
+
+    history.add(deletions);
 }
 
 void MapView::setToolPropertyWidgetVisibility(editing_mode mode)

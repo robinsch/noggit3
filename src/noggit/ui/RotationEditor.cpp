@@ -288,33 +288,8 @@ namespace noggit
         if (entry)
         {
             selection_type selection = entry.get();
-
-            if (selection.which() == eEntry_Model)
-            {
-                auto model = boost::get<selected_model_type>(selection);
-
-                object_editor_history elem;
-                elem.action = object_editor_action::move;
-                elem.uid = model->uid;
-                elem.pos = model->pos;
-                elem.dir = model->dir;
-
-                history.push_back({ elem });
-            }
-            else // we know it's a wmo
-            {
-                auto wmo = boost::get<selected_wmo_type>(selection);
-
-                std::vector<object_editor_history> history;
-
-                object_editor_history elem;
-                elem.action = object_editor_action::move;
-                elem.uid = wmo->mUniqueID;
-                elem.pos = wmo->pos;
-                elem.dir = wmo->dir;
-
-                history.push_back({ elem });
-            }
+            object_editor_history elem(selection, object_editor_action::move);
+            history.push_back({ elem });
         }
 
         _object_editor->get_history().add(history);
@@ -331,34 +306,8 @@ namespace noggit
         if (entry)
         {
             selection_type selection = entry.get();
-
-            if (selection.which() == eEntry_Model)
-            {
-                auto model = boost::get<selected_model_type>(selection);
-                std::vector<object_editor_history> history;
-
-                object_editor_history elem;
-                elem.action = object_editor_action::move;
-                elem.uid = model->uid;
-                elem.pos = model->pos;
-                elem.dir = model->dir;
-
-                history.push_back({ elem });
-            }
-            else // we know it's a wmo
-            {
-                auto wmo = boost::get<selected_wmo_type>(selection);
-
-                std::vector<object_editor_history> history;
-
-                object_editor_history elem;
-                elem.action = object_editor_action::move;
-                elem.uid = wmo->mUniqueID;
-                elem.pos = wmo->pos;
-                elem.dir = wmo->dir;
-
-                history.push_back({ elem });
-            }
+            object_editor_history elem(selection, object_editor_action::move);
+            history.push_back({ elem });
         }
 
         _object_editor->get_history().add(history);
