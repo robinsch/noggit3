@@ -47,6 +47,7 @@ class World
 {
 private:
   std::unordered_map<std::string, std::vector<ModelInstance*>> _models_by_filename;
+  std::unordered_map<std::string, std::vector<WMOInstance*>> _wmos_by_filename;
   noggit::world_model_instances_storage _model_instance_storage;
   noggit::world_tile_update_queue _tile_update_queue;
 public:
@@ -348,8 +349,12 @@ public:
 
   bool need_model_updates = false;
 
+  std::vector<ModelInstance*> get_models_by_filename(std::string const& filename);
+  std::vector<WMOInstance*> get_wmos_by_filename(std::string const& filename);
+
 private:
   void update_models_by_filename();
+  void update_wmos_by_filename();
 
   std::set<MapChunk*>& vertexBorderChunks();
 

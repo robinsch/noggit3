@@ -2031,6 +2031,7 @@ void World::unload_every_model_and_wmo_instance()
   _model_instance_storage.clear();
 
   _models_by_filename.clear();
+  _wmos_by_filename.clear();
 }
 
 ModelInstance* World::addM2 ( std::string const& filename
@@ -2095,6 +2096,8 @@ WMOInstance* World::addWMO ( std::string const& filename
   wmo_instance.recalcExtents();
 
   auto uid = _model_instance_storage.add_wmo_instance(std::move(wmo_instance), true);
+  auto model = _model_instance_storage.get_wmo_instance(uid).get();
+  _wmos_by_filename[filename].push_back(model);
   return _model_instance_storage.get_wmo_instance(uid).get();
 }
 
@@ -2571,5 +2574,38 @@ void World::update_models_by_filename()
     model_instance.recalcExtents();
   });
 
+  // @robinsch: update wmo's too
+  update_wmos_by_filename();
+
   need_model_updates = false;
+}
+
+void World::update_wmos_by_filename()
+{
+    _wmos_by_filename.clear();
+
+    _model_instance_storage.for_each_wmo_instance([&](WMOInstance& model_instance)
+    {
+        _wmos_by_filename[model_instance.wmo->filename].push_back(&model_instance);
+        // to make sure the transform matrix are up to date
+        model_instance.recalcExtents();
+    });
+}
+
+std::vector<ModelInstance*> World::get_models_by_filename(std::string const& filename)
+{
+    std::unordered_map<std::string, std::vector<ModelInstance*>>::const_iterator it = _models_by_filename.find(filename);
+    if (it != _models_by_filename.end())
+        return it->second;
+
+    return std::vector<ModelInstance*>();
+}
+
+std::vector<WMOInstance*> World::get_wmos_by_filename(std::string const& filename)
+{
+    std::unordered_map<std::string, std::vector<WMOInstance*>>::const_iterator it = _wmos_by_filename.find(filename);
+    if (it != _wmos_by_filename.end())
+        return it->second;
+
+    return std::vector<WMOInstance*>();
 }
