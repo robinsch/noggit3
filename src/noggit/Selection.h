@@ -48,11 +48,3 @@ enum eSelectionEntryTypes
 
 using selection_entry = std::pair<float, selection_type>;
 using selection_result = std::vector<selection_entry>;
-
-struct selection_global
-{
-    std::string filename = "";
-    float scale = 1.f;
-    math::degrees::vec3 dir;
-    math::vector_3d pos;
-};

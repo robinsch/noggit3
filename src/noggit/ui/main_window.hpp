@@ -30,13 +30,8 @@ namespace noggit
 
       std::unordered_set<QWidget*> displayed_widgets;
 
-      // Information about the currently global selected model / WMO / triangle.
-      std::vector<selection_global> selected_global;
-
     signals:
       void exit_prompt_opened();
-
-      static main_window* instance();
 
     private:
       void loadMap (int mapID);

@@ -12,6 +12,7 @@
 #include <noggit/ui/checkbox.hpp>
 #include <noggit/ui/main_window.hpp>
 #include <util/qt/overload.hpp>
+#include <noggit/SelectionCache.h>
 
 #include <boost/algorithm/string/predicate.hpp>
 
@@ -572,7 +573,7 @@ namespace noggit
         {
             std::vector<selection_type> selected_model;
 
-            for (auto& selection : main_window::instance()->selected_global)
+            for (auto& selection : SelectionCache::instance()->GetSelectedObjects())
             {
                 std::string filename = selection.filename;
                 std::replace(filename.begin(), filename.end(), '/', '\\');
@@ -613,7 +614,7 @@ namespace noggit
 
             replace_selection(selected_model);
 
-            main_window::instance()->selected_global.clear();
+            SelectionCache::instance()->Clear();
         }
 
         void object_editor::copy_current_selection(World* world)
@@ -642,12 +643,7 @@ namespace noggit
                     selected_model.push_back(clone);
                     _model_instance_created.push_back(clone);
 
-                    selection_global global;
-                    global.filename = original->model->filename;
-                    global.scale = original->scale;
-                    global.dir = original->dir;
-                    global.pos = pivot ? original->pos - pivot.get() : math::vector_3d();
-                    main_window::instance()->selected_global.push_back(global);
+                    SelectionCache::instance()->AddSelectedObject(original);
                 }
                 else if (selection.which() == eEntry_WMO)
                 {
@@ -660,11 +656,7 @@ namespace noggit
                     selected_model.push_back(clone);
                     _model_instance_created.push_back(clone);
 
-                    selection_global global;
-                    global.filename = original->wmo->filename;
-                    global.dir = original->dir;
-                    global.pos = pivot ? original->pos - pivot.get() : math::vector_3d();
-                    main_window::instance()->selected_global.push_back(global);
+                    SelectionCache::instance()->AddSelectedObject(original);
                 }
             }
             replace_selection(selected_model);

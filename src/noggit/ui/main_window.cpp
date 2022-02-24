@@ -147,12 +147,6 @@ namespace noggit
       setCentralWidget (mapview);
     }
 
-    main_window* main_window::instance()
-    {
-        static main_window window;
-        return &window;
-    }
-
     void main_window::loadMap(int mapID)
     {
       _minimap->world (nullptr);

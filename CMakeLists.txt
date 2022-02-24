@@ -238,6 +238,7 @@ set ( noggit_root_sources
       src/noggit/wmo_liquid.cpp
       src/noggit/world_model_instances_storage.cpp
       src/noggit/world_tile_update_queue.cpp
+      src/noggit/SelectionCache.cpp
     )
 
 set ( noggit_ui_sources
@@ -321,6 +322,7 @@ set ( noggit_root_headers
       src/noggit/ModelManager.h
       src/noggit/Particle.h
       src/noggit/Selection.h
+      src/noggit/SelectionCache.h
       src/noggit/Sky.h
       src/noggit/TextureManager.h
       src/noggit/TileWater.hpp
