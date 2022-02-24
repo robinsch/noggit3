@@ -80,6 +80,7 @@ void MapView::set_editing_mode (editing_mode mode)
 
   objectEditor->modelImport->hide();
   objectEditor->rotationEditor->hide();
+  objectEditor->get_history().clear();
   TexturePalette->hide();
   TexturePicker->hide();
   _texture_palette_dock->hide();
