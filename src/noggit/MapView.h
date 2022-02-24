@@ -147,6 +147,7 @@ private:
   std::vector<selection_type> lastSelected;
 
   bool _rotation_editor_need_update = false;
+  bool _model_list_need_update = false;
 
   // Vars for the ground editing toggle mode store the status of some
   // view settings when the ground editing mode is switched on to

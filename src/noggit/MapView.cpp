@@ -36,6 +36,7 @@
 #include <noggit/ui/texture_swapper.hpp>
 #include <noggit/ui/texturing_tool.hpp>
 #include <noggit/ui/texture_palette_small.hpp>
+#include <noggit/ui/model_list_small.h>
 #ifdef NOGGIT_HAS_SCRIPTING
 #include <noggit/scripting/scripting_tool.hpp>
 #include <noggit/scripting/script_settings.hpp>
@@ -86,6 +87,7 @@ void MapView::set_editing_mode (editing_mode mode)
   MoveObj = false;
   _world->reset_selection();
   _rotation_editor_need_update = true;
+  _model_list_need_update = true;
 
   if (!ui_hidden)
   {
@@ -1808,6 +1810,7 @@ void MapView::tick (float dt)
     if (lastSelected != currentSelection)
     {
       _rotation_editor_need_update = true;
+      _model_list_need_update = true;
     }
 
     if (terrainMode == editing_mode::object)
@@ -2171,6 +2174,12 @@ void MapView::tick (float dt)
     _rotation_editor_need_update = false;
   }
 
+  if (_model_list_need_update)
+  {
+      objectEditor->modelList->updateValues();
+      _model_list_need_update = false;
+  }
+
   QString status;
   status += ( QString ("tile: %1 %2")
             . arg (std::floor (_camera.position.x / TILESIZE))
@@ -2495,6 +2504,7 @@ void MapView::doSelection (bool selectTerrainOnly)
   }
 
   _rotation_editor_need_update = true;
+  _model_list_need_update = true;
 }
 
 void MapView::update_cursor_pos()
@@ -2994,6 +3004,7 @@ void MapView::selectModel(std::string const& model)
 
   objectEditor->copy_current_selection(_world.get());
   _rotation_editor_need_update = true;
+  _model_list_need_update = true;
 }
 
 void MapView::change_selected_wmo_doodadset(int set)

@@ -11,6 +11,7 @@
 #include <noggit/ui/RotationEditor.h>
 #include <noggit/ui/checkbox.hpp>
 #include <noggit/ui/main_window.hpp>
+#include <noggit/ui/model_list_small.h>
 #include <util/qt/overload.hpp>
 #include <noggit/SelectionCache.h>
 
@@ -52,6 +53,7 @@ namespace noggit
             , modelImport(new model_import(this))
             , rotationEditor(new rotation_editor(mapView, world, this))
             , helper_models_widget(new helper_models(this))
+            , modelList(new model_list_small(mapView, world))
             , _settings(new QSettings(this))
             , _copy_model_stats(true)
             , selected()
@@ -203,6 +205,7 @@ namespace noggit
             QPushButton* rotEditorButton = new QPushButton("Pos/Rotation Editor", this);
             QPushButton* visToggleButton = new QPushButton("Toggle Hidden Models Visibility", this);
             QPushButton* clearListButton = new QPushButton("Clear Hidden Models List", this);
+            QPushButton* showSpawnsButton = new QPushButton("Show Object Spawn List", this);
 
             QGroupBox* importBox = new QGroupBox(this);
             new QGridLayout(importBox);
@@ -229,6 +232,7 @@ namespace noggit
             layout->addRow(rotEditorButton);
             layout->addRow(visToggleButton);
             layout->addRow(clearListButton);
+            layout->addRow(showSpawnsButton);
             layout->addRow(importBox);
             layout->addRow(_filename);
 
@@ -325,6 +329,10 @@ namespace noggit
 
             connect(rotEditorButton, &QPushButton::clicked, [=]() {
                 rotationEditor->show();
+                });
+
+            connect(showSpawnsButton, &QPushButton::clicked, [=]() {
+                modelList->show();
                 });
 
             connect(visToggleButton, &QPushButton::clicked, [=]() {
@@ -643,7 +651,7 @@ namespace noggit
                     selected_model.push_back(clone);
                     _model_instance_created.push_back(clone);
 
-                    SelectionCache::instance()->AddSelectedObject(original);
+                    SelectionCache::instance()->AddSelectedObject(clone);
                 }
                 else if (selection.which() == eEntry_WMO)
                 {
@@ -656,7 +664,7 @@ namespace noggit
                     selected_model.push_back(clone);
                     _model_instance_created.push_back(clone);
 
-                    SelectionCache::instance()->AddSelectedObject(original);
+                    SelectionCache::instance()->AddSelectedObject(clone);
                 }
             }
             replace_selection(selected_model);

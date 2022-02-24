@@ -26,6 +26,7 @@ namespace noggit
     class model_import;
     class rotation_editor;
     class helper_models;
+    class model_list_small;
   }
 }
 
@@ -141,6 +142,7 @@ namespace noggit
 
       model_import *modelImport;
       rotation_editor* rotationEditor;
+      model_list_small* modelList;
       helper_models* helper_models_widget;
       QSize sizeHint() const override;
 

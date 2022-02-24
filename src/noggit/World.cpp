@@ -2031,6 +2031,10 @@ void World::unload_every_model_and_wmo_instance()
   _model_instance_storage.clear();
 
   _models_by_filename.clear();
+  _wmos_by_filename.clear();
+
+  _models_pos_by_filename.clear();
+  _wmos_pos_by_filename.clear();
 }
 
 ModelInstance* World::addM2 ( std::string const& filename
@@ -2076,6 +2080,7 @@ ModelInstance* World::addM2 ( std::string const& filename
   std::uint32_t uid = _model_instance_storage.add_model_instance(std::move(model_instance), true);
   auto model = _model_instance_storage.get_model_instance(uid).get();
   _models_by_filename[filename].push_back(model);
+  _models_pos_by_filename[filename].insert(newPos);
   return model;
 }
 
@@ -2095,16 +2100,21 @@ WMOInstance* World::addWMO ( std::string const& filename
   wmo_instance.recalcExtents();
 
   auto uid = _model_instance_storage.add_wmo_instance(std::move(wmo_instance), true);
+  auto model = _model_instance_storage.get_wmo_instance(uid).get();
+  _wmos_by_filename[filename].push_back(model);
+  _wmos_pos_by_filename[filename].insert(newPos);
   return _model_instance_storage.get_wmo_instance(uid).get();
 }
 
 std::uint32_t World::add_model_instance(ModelInstance model_instance, bool from_reloading)
 {
+  _models_pos_by_filename[model_instance.model->filename].insert(model_instance.pos);
   return _model_instance_storage.add_model_instance(std::move(model_instance), from_reloading);
 }
 
 std::uint32_t World::add_wmo_instance(WMOInstance wmo_instance, bool from_reloading)
 {
+  _wmos_pos_by_filename[wmo_instance.wmo->filename].insert(wmo_instance.pos);
   return _model_instance_storage.add_wmo_instance(std::move(wmo_instance), from_reloading);
 }
 
@@ -2571,5 +2581,39 @@ void World::update_models_by_filename()
     model_instance.recalcExtents();
   });
 
+  // @robinsch: update wmo's too
+  update_wmos_by_filename();
+
   need_model_updates = false;
 }
+
+void World::update_wmos_by_filename()
+{
+    _wmos_by_filename.clear();
+
+    _model_instance_storage.for_each_wmo_instance([&](WMOInstance& model_instance)
+        {
+            _wmos_by_filename[model_instance.wmo->filename].push_back(&model_instance);
+            // to make sure the transform matrix are up to date
+            model_instance.recalcExtents();
+        });
+}
+
+std::set<math::vector_3d> World::get_models_pos_by_filename(std::string const& filename)
+{
+    auto it = _models_pos_by_filename.find(filename);
+    if (it != _models_pos_by_filename.end())
+        return it->second;
+
+    return std::set<math::vector_3d>();
+}
+
+std::set<math::vector_3d> World::get_wmos_pos_by_filename(std::string const& filename)
+{
+    auto it = _wmos_pos_by_filename.find(filename);
+    if (it != _wmos_pos_by_filename.end())
+        return it->second;
+
+    return std::set<math::vector_3d>();
+}
+
