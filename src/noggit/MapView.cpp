@@ -109,6 +109,8 @@ void MapView::history_undo()
         noggit::history<std::vector<object_editor_history>>& history = objectEditor->get_history();
         if (std::vector<object_editor_history>* undo = history.undo())
         {
+            _world->reset_selection();
+
             for (std::vector<object_editor_history>::iterator it = undo->begin(); it != undo->end(); ++it)
             {
                 switch (it->action)
@@ -141,6 +143,8 @@ void MapView::history_redo()
         noggit::history<std::vector<object_editor_history>>& history = objectEditor->get_history();
         if (std::vector<object_editor_history>* redo = history.redo())
         {
+            _world->reset_selection();
+
             for (std::vector<object_editor_history>::iterator it = redo->begin(); it != redo->end(); ++it)
             {
                 switch (it->action)
@@ -174,24 +178,7 @@ void MapView::begin_moving()
         std::vector<object_editor_history> move;
 
         for (auto& selection : _world->current_selection())
-        {
-            std::uint32_t uid = selection.which() == eEntry_Model
-                ? boost::get<selected_model_type>(selection)->uid
-                : boost::get<selected_wmo_type>(selection)->mUniqueID
-                ;
-
-            math::vector_3d pos = selection.which() == eEntry_Model
-                ? boost::get<selected_model_type>(selection)->pos
-                : boost::get<selected_wmo_type>(selection)->pos
-                ;
-
-            math::degrees::vec3 dir = selection.which() == eEntry_Model
-                ? boost::get<selected_model_type>(selection)->dir
-                : boost::get<selected_wmo_type>(selection)->dir
-                ;
-
             move.push_back(object_editor_history(selection, object_editor_action::move));
-        }
 
         history.add(move);
     }
@@ -206,24 +193,7 @@ void MapView::release_moving()
         std::vector<object_editor_history> move;
 
         for (auto& selection : _world->current_selection())
-        {
-            std::uint32_t uid = selection.which() == eEntry_Model
-                ? boost::get<selected_model_type>(selection)->uid
-                : boost::get<selected_wmo_type>(selection)->mUniqueID
-                ;
-
-            math::vector_3d pos = selection.which() == eEntry_Model
-                ? boost::get<selected_model_type>(selection)->pos
-                : boost::get<selected_wmo_type>(selection)->pos
-                ;
-
-            math::degrees::vec3 dir = selection.which() == eEntry_Model
-                ? boost::get<selected_model_type>(selection)->dir
-                : boost::get<selected_wmo_type>(selection)->dir
-                ;
-
             move.push_back(object_editor_history(selection, object_editor_action::move));
-        }
 
         history.add(move);
     }
@@ -3048,7 +3018,8 @@ void MapView::mousePressEvent(QMouseEvent* event)
     {
       MoveObj = true;
 
-      begin_moving();
+      if (_world->has_model_selected())
+        begin_moving();
     }
 
     if(terrainMode == editing_mode::mccv)
@@ -3174,7 +3145,8 @@ void MapView::mouseReleaseEvent (QMouseEvent* event)
 
   case Qt::MiddleButton:
     MoveObj = false;
-    release_moving();
+    if (_world->has_model_selected())
+        release_moving();
     break;
   }
 }
