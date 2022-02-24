@@ -36,6 +36,7 @@
 #include <noggit/ui/texture_swapper.hpp>
 #include <noggit/ui/texturing_tool.hpp>
 #include <noggit/ui/texture_palette_small.hpp>
+#include <noggit/ui/model_list_small.h>
 #ifdef NOGGIT_HAS_SCRIPTING
 #include <noggit/scripting/scripting_tool.hpp>
 #include <noggit/scripting/script_settings.hpp>
@@ -82,6 +83,7 @@ void MapView::set_editing_mode (editing_mode mode)
   TexturePalette->hide();
   TexturePicker->hide();
   _texture_palette_dock->hide();
+  _model_list_dock->hide();
 
   MoveObj = false;
   _world->reset_selection();
@@ -480,6 +482,18 @@ void MapView::createGUI()
   );
   connect(this, &QObject::destroyed, _texture_palette_small, &QObject::deleteLater);
 
+  _model_list_small = new noggit::ui::model_list_small(this, _world.get());
+  _model_list_small->hide();
+
+  connect(_model_list_small, &noggit::ui::model_list_small::selected
+      , [=](std::string const& filename)
+      {
+          makeCurrent();
+          opengl::context::scoped_setter const _(::gl, context());
+      }
+  );
+  connect(this, &QObject::destroyed, _model_list_small, &QObject::deleteLater);
+
   guidetailInfos = new noggit::ui::detail_infos(this);
   guidetailInfos->hide();
   connect(this, &QObject::destroyed, guidetailInfos, &QObject::deleteLater);
@@ -577,6 +591,28 @@ void MapView::createGUI()
   }
 
   connect(this, &QObject::destroyed, _texture_palette_dock, &QObject::deleteLater);
+
+  // create model list spawns dock
+
+  _model_list_dock->setFeatures(QDockWidget::DockWidgetMovable
+      | QDockWidget::DockWidgetFloatable
+      | QDockWidget::DockWidgetClosable
+  );
+
+  _model_list_dock->setWidget(_model_list_small);
+  _model_list_dock->setWindowTitle("Model Spawn List");
+  _model_list_dock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+  _model_list_dock->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum));
+
+  _main_window->addDockWidget(Qt::BottomDockWidgetArea, _model_list_dock);
+
+  if (_settings->value("undock_small_model_list/enabled", 1).toBool())
+  {
+      _model_list_dock->setFloating(true);
+      _model_list_dock->move(_main_window->geometry().bottomLeft().x() + 50, _main_window->geometry().bottomLeft().y() - 200);
+  }
+
+  connect(this, &QObject::destroyed, _model_list_dock, &QObject::deleteLater);
    
   // create toolbar
 
@@ -1435,6 +1471,7 @@ void MapView::on_exit_prompt()
   _keybindings->hide();
   _minimap_dock->hide();
   _texture_palette_small->hide();
+  _model_list_small->hide();
   objectEditor->helper_models_widget->hide();
   objectEditor->modelImport->hide();
   objectEditor->rotationEditor->hide();

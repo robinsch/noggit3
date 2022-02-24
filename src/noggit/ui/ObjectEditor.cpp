@@ -52,7 +52,6 @@ namespace noggit
             , modelImport(new model_import(this))
             , rotationEditor(new rotation_editor(mapView, world, this))
             , helper_models_widget(new helper_models(this))
-            , modelList(new model_list_small(mapView, world))
             , _settings(new QSettings(this))
             , _copy_model_stats(true)
             , selected()

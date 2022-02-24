@@ -33,9 +33,8 @@ namespace noggit
     {
         ModelList::ModelList(QWidget* parent) : QListWidget(parent)
         {
-            setIconSize(QSize(100, 100));
-            setViewMode(QListWidget::IconMode);
-            setFlow(QListWidget::LeftToRight);
+            setViewMode(QListWidget::ListMode);
+            setFlow(QListWidget::TopToBottom);
             setWrapping(false);
             setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
             setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -62,7 +61,6 @@ namespace noggit
             setMinimumSize(100, 100);
 
             _model_list = new ModelList(this);
-            //_model_list->setGridSize(QSize(0, sizeHint().height()));
 
             layout->addWidget(_model_list, 0, 0);
 

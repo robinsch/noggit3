@@ -50,6 +50,7 @@ namespace noggit
     class texture_palette_small;
     struct main_window;
     struct tileset_chooser;
+    class model_list_small;
   }
 #ifdef NOGGIT_HAS_SCRIPTING
   namespace scripting
@@ -293,10 +294,12 @@ private:
   noggit::bool_toggle_property _show_keybindings_window = {false};
   noggit::bool_toggle_property _show_texture_palette_window = {false};
   noggit::bool_toggle_property _show_texture_palette_small_window = {false};
+  noggit::bool_toggle_property _show_model_list_small = { false };
 
   noggit::ui::minimap_widget* _minimap;
   QDockWidget* _minimap_dock;
   QDockWidget* _texture_palette_dock;
+  QDockWidget* _model_list_dock;
 
   void move_camera_with_auto_height (math::vector_3d const&);
 
@@ -311,6 +314,7 @@ private:
   noggit::ui::detail_infos* guidetailInfos;
   noggit::ui::zone_id_browser* ZoneIDBrowser;
   noggit::ui::texture_palette_small* _texture_palette_small;
+  noggit::ui::model_list_small* _model_list_small;
   QDockWidget* _areaid_editor_dock;
   noggit::ui::texture_picker* TexturePicker;
   noggit::ui::water* guiWater;
