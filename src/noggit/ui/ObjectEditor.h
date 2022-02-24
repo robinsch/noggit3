@@ -82,7 +82,6 @@ struct object_editor_history
         uid = uid_;
         dir = dir_;
         pos = pos_;
-        undo_once = true;
     }
 
     object_editor_action action;
@@ -92,7 +91,6 @@ struct object_editor_history
     std::uint32_t uid;
     math::degrees::vec3 dir;
     math::vector_3d pos;
-    bool undo_once;
 };
 
 namespace noggit

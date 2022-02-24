@@ -111,9 +111,6 @@ void MapView::history_undo()
         {
             for (std::vector<object_editor_history>::iterator it = undo->begin(); it != undo->end(); ++it)
             {
-                if (!it->undo_once)
-                    continue;
-
                 switch (it->action)
                 {
                     case object_editor_action::move:
@@ -122,17 +119,15 @@ void MapView::history_undo()
                     case object_editor_action::remove:
                     {
                         if (it->type == eEntry_Model)
-                        {
-                            noggit::object_paste_params p;
-                            _world->addM2(it->filename, it->pos, it->scale, it->dir, nullptr);
-                        }
+                            it->uid = _world->addM2(it->filename, it->pos, it->scale, it->dir, nullptr)->uid;
                         else if (it->type == eEntry_WMO)
-                            _world->addWMO(it->filename, it->pos, it->dir);
-
-                        // @robinsch: avoid duplicates on undo
-                        it->undo_once = false;
+                            it->uid = _world->addWMO(it->filename, it->pos, it->dir)->mUniqueID;
+                            
                         break;
                     }
+                    case object_editor_action::add:
+                        _world->delete_model(it->uid);
+                        break;
                 }
             }
         }
@@ -144,9 +139,9 @@ void MapView::history_redo()
     if (terrainMode == editing_mode::object)
     {
         noggit::history<std::vector<object_editor_history>>& history = objectEditor->get_history();
-        if (std::vector<object_editor_history> const* redo = history.redo())
+        if (std::vector<object_editor_history>* redo = history.redo())
         {
-            for (std::vector<object_editor_history>::const_iterator it = redo->begin(); it != redo->end(); ++it)
+            for (std::vector<object_editor_history>::iterator it = redo->begin(); it != redo->end(); ++it)
             {
                 switch (it->action)
                 {
@@ -154,7 +149,16 @@ void MapView::history_redo()
                         _world->move_model(it->uid, it->pos, it->dir);
                         break;
                     case object_editor_action::remove:
+                        _world->delete_model(it->uid);
                         break;
+                    case object_editor_action::add:
+                    {
+                        if (it->type == eEntry_Model)
+                            it->uid = _world->addM2(it->filename, it->pos, it->scale, it->dir, nullptr)->uid;
+                        else if (it->type == eEntry_WMO)
+                            it->uid = _world->addWMO(it->filename, it->pos, it->dir)->mUniqueID;
+                        break;
+                    }
                 }
             }
         }

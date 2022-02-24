@@ -2392,6 +2392,16 @@ void World::delete_models(std::vector<selection_type> const& types)
   need_model_updates = true;
 }
 
+void World::delete_model(std::uint32_t uid)
+{
+    auto model = get_model(uid);
+    if (!model)
+        return;
+
+    selection_type entry = model.get();
+    delete_models({ entry });
+}
+
 void World::selectVertices(math::vector_3d const& pos1, math::vector_3d const& pos2)
 {
   math::vector_3d pos_min = math::vector_3d(std::min(pos1.x,pos2.x),std::min(pos1.y,pos2.y),std::min(pos1.z,pos2.z));

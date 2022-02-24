@@ -416,6 +416,9 @@ namespace noggit
             if (select_pasted_objects)
                 world->reset_selection();
 
+            // @robinsch: undo redo system
+            std::vector<object_editor_history> history;
+
             for (auto& selection : selected)
             {
                 math::vector_3d pos;
@@ -480,6 +483,10 @@ namespace noggit
 
                     if (select_pasted_objects)
                         world->add_to_selection(mi);
+
+                    // @robinsch: undo redo system
+                    object_editor_history elem(mi, object_editor_action::add);
+                    history.push_back(elem);
                 }
                 else if (selection.which() == eEntry_WMO)
                 {
@@ -494,8 +501,15 @@ namespace noggit
 
                     if (select_pasted_objects)
                         world->add_to_selection(wi);
+
+                    // @robinsch: undo redo system
+                    object_editor_history elem(wi, object_editor_action::add);
+                    history.push_back(elem);
                 }
             }
+
+            // @robinsch: undo redo system
+            get_history().add(history);
         }
 
         void object_editor::togglePasteMode()
