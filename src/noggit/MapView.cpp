@@ -85,7 +85,11 @@ void MapView::set_editing_mode (editing_mode mode)
   _texture_palette_dock->hide();
 
   MoveObj = false;
-  _world->reset_selection();
+
+  // @robinsch: model selector support
+  if (terrainMode != editing_mode::scripting)
+    _world->reset_selection();
+
   _rotation_editor_need_update = true;
   _model_list_need_update = true;
 

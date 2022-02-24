@@ -161,6 +161,15 @@ namespace noggit
       }
     }
 
+    void model::select()
+    {
+        std::vector<selection_type> type;
+        util::visit(_impl, [&](auto x) { type.emplace_back(x); });
+
+        for (auto& m : type)
+            world()->add_to_selection(m);
+    }
+
     void collect_models(
         script_context * ctx
       , World * world
@@ -199,6 +208,7 @@ namespace noggit
         , "get_filename", &model::get_filename
         , "has_filename", &model::has_filename
         , "replace", &model::replace
+        , "select", &model::select
       );
     }
   } // namespace scripting

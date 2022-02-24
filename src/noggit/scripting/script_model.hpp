@@ -38,6 +38,7 @@ namespace noggit
       unsigned get_uid();
 
       void remove();
+      void select();
 
       std::string get_filename();
       void replace(std::string const& filename);
