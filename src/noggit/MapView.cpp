@@ -3233,6 +3233,13 @@ void MapView::save(save_mode mode)
 
     AsyncLoader::instance().reset_object_fail();
 
+    // @robinsch: save position for TC filewatcher to read
+    {
+        QSettings settings;
+        std::ofstream f{ (boost::filesystem::path(settings.value("project/path").toString().toStdString())
+            / noggit::mpq::normalized_filename(std::to_string(std::int32_t(ZEROPOINT - _camera.position.z)) + "_" + std::to_string(std::int32_t(ZEROPOINT - _camera.position.x)) + "_" + std::to_string(std::int32_t(_camera.position.y)) + ".noggit")).string() };
+        f.close();
+    }
 
     _main_window->statusBar()->showMessage("Map saved", 2000);
 
