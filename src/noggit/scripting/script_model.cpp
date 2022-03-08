@@ -146,18 +146,22 @@ namespace noggit
         return;
       }
 
+      math::vector_3d pos = get_pos();
+      math::vector_3d rot = get_rot();
+      float scale = get_scale();
+
       remove();
 
       if (boost::ends_with(filename, ".wmo"))
       {
         _impl = 
-          world()->addWMO(filename, get_pos(), math::degrees::vec3 {get_rot()});
+          world()->addWMO(filename, pos, math::degrees::vec3 {rot});
       }
       else
       {
         auto params = object_paste_params();
         _impl =
-          world()->addM2(filename, get_pos(), get_scale(), math::degrees::vec3 {get_rot()}, &params);
+          world()->addM2(filename, pos, scale, math::degrees::vec3 {rot}, &params);
       }
     }
 
