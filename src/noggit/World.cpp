@@ -229,6 +229,9 @@ void World::set_current_selection(selection_type entry)
 
 void World::add_to_selection(selection_type entry)
 {
+  if (is_selected(entry))
+      return;
+
   if (entry.which() != eEntry_MapChunk)
   {
     _selected_model_count++;
