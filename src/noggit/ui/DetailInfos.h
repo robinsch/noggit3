@@ -5,6 +5,7 @@
 #include <noggit/ui/widget.hpp>
 
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QPushButton>
 
 #include <string>
 
@@ -16,10 +17,12 @@ namespace noggit
     {
     private:
       QLabel* _info_text;
+      QPushButton* _copy_button;
 
     public:
       detail_infos(QWidget* parent);
       void setText (const std::string& t);
+      void copyText();
     };
   }
 }
