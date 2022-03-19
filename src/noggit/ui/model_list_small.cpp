@@ -83,6 +83,16 @@ namespace noggit
                         uint32_t idx = _model_list->row(item);
                         math::vector_3d pos = _list_item_pos[idx];
                         _mapView->_camera.position = pos + camera_offset;
+
+                        // @robinsch: on click set selection to clicked model instance
+                        {
+                            auto model = _world->get_model(_list_item_uid[idx]);
+                            if (!model)
+                                return;
+
+                            selection_type entry = model.get();
+                            _world->set_current_selection(entry);
+                        }
                     }
                 }
             );
@@ -99,6 +109,7 @@ namespace noggit
         {
             _model_list->clear();
             _list_item_pos.clear();
+            _list_item_uid.clear();
 
             if (_world->has_multiple_model_selected())
                 return;
@@ -137,46 +148,49 @@ namespace noggit
 
                     updateWidget();
                     _model_list->addItem(list_item);
+                    _list_item_uid.push_back(sel_uid);
                     _list_item_pos.push_back(sel_pos);
                 }
 
                 // @robinsch: store camera offset
                 camera_offset = (_mapView->_camera.position - sel_pos);
 
-                for (auto& pos : _world->get_models_pos_by_filename(sel_filename))
+                for (ModelInstance* model : _world->get_models_by_filename(sel_filename))
                 {
-                    if (pos == sel_pos)
+                    if (model->pos == sel_pos)
                         continue;
 
                     QListWidgetItem* list_item = new QListWidgetItem(_model_list);
                     list_item->setText(QString("pos: (%2, %3, %4)")
-                        .arg(ZEROPOINT - pos.z)
-                        .arg(ZEROPOINT - pos.x)
-                        .arg(pos.y)
+                        .arg(ZEROPOINT - model->pos.z)
+                        .arg(ZEROPOINT - model->pos.x)
+                        .arg(model->pos.y)
                     );
                     list_item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
                     updateWidget();
                     _model_list->addItem(list_item);
-                    _list_item_pos.push_back(pos);
+                    _list_item_uid.push_back(model->uid);
+                    _list_item_pos.push_back(model->pos);
                 }
 
-                for (auto& pos : _world->get_wmos_pos_by_filename(sel_filename))
+                for (WMOInstance* wmo : _world->get_wmos_by_filename(sel_filename))
                 {
-                    if (pos == sel_pos)
+                    if (wmo->pos == sel_pos)
                         continue;
 
                     QListWidgetItem* list_item = new QListWidgetItem(_model_list);
                     list_item->setText(QString("pos: (%1, %2, %3)")
-                        .arg(ZEROPOINT - pos.z)
-                        .arg(ZEROPOINT - pos.x)
-                        .arg(pos.y)
+                        .arg(ZEROPOINT - wmo->pos.z)
+                        .arg(ZEROPOINT - wmo->pos.x)
+                        .arg(wmo->pos.y)
                     );
                     list_item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
                     updateWidget();
                     _model_list->addItem(list_item);
-                    _list_item_pos.push_back(pos);
+                    _list_item_uid.push_back(wmo->mUniqueID);
+                    _list_item_pos.push_back(wmo->pos);
                 }
             }
         }
@@ -189,6 +203,7 @@ namespace noggit
         void model_list_small::hideEvent(QHideEvent* event_)
         {
             _model_list->clear();
+            _list_item_uid.clear();
             _list_item_pos.clear();
         }
     }

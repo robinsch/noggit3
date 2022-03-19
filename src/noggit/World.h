@@ -355,6 +355,8 @@ public:
 
   bool need_model_updates = false;
 
+  std::vector<ModelInstance*> get_models_by_filename(std::string const& filename);
+  std::vector<WMOInstance*> get_wmos_by_filename(std::string const& filename);
   std::set<math::vector_3d> get_models_pos_by_filename(std::string const& filename);
   std::set<math::vector_3d> get_wmos_pos_by_filename(std::string const& filename);
 

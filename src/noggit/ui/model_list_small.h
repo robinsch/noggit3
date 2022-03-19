@@ -57,6 +57,7 @@ namespace noggit
             QGridLayout* layout;
 
             QListWidget* _model_list;
+            std::vector<uint32_t> _list_item_uid;
             std::vector<math::vector_3d> _list_item_pos;
 
             math::vector_3d camera_offset;

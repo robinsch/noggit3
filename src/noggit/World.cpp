@@ -2612,6 +2612,24 @@ void World::update_wmos_by_filename()
         });
 }
 
+std::vector<ModelInstance*> World::get_models_by_filename(std::string const& filename)
+{
+    auto it = _models_by_filename.find(filename);
+    if (it != _models_by_filename.end())
+        return it->second;
+
+    return std::vector<ModelInstance*>();
+}
+
+std::vector<WMOInstance*> World::get_wmos_by_filename(std::string const& filename)
+{
+    auto it = _wmos_by_filename.find(filename);
+    if (it != _wmos_by_filename.end())
+        return it->second;
+
+    return std::vector<WMOInstance*>();
+}
+
 std::set<math::vector_3d> World::get_models_pos_by_filename(std::string const& filename)
 {
     auto it = _models_pos_by_filename.find(filename);
