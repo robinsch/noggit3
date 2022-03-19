@@ -179,7 +179,11 @@ void MapView::begin_moving()
         std::vector<object_editor_history> move;
 
         for (auto& selection : _world->current_selection())
-            move.push_back(object_editor_history(selection, object_editor_action::move));
+            if (selection.which() != eEntry_MapChunk)
+                move.push_back(object_editor_history(selection, object_editor_action::move));
+
+        if (move.empty())
+            return;
 
         history.add(move);
     }
@@ -194,7 +198,11 @@ void MapView::release_moving()
         std::vector<object_editor_history> move;
 
         for (auto& selection : _world->current_selection())
-            move.push_back(object_editor_history(selection, object_editor_action::move));
+            if (selection.which() != eEntry_MapChunk)
+                move.push_back(object_editor_history(selection, object_editor_action::move));
+
+        if (move.empty())
+            return;
 
         history.add(move);
     }
@@ -207,7 +215,11 @@ void MapView::before_delete_selected_objects()
     std::vector<object_editor_history> deletions;
 
     for (auto& selection : _world->current_selection())
-        deletions.push_back(object_editor_history(selection, object_editor_action::remove));
+        if (selection.which() != eEntry_MapChunk)
+            deletions.push_back(object_editor_history(selection, object_editor_action::remove));        
+
+    if (deletions.empty())
+        return;
 
     history.add(deletions);
 }
