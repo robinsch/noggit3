@@ -88,7 +88,9 @@ void MapView::set_editing_mode (editing_mode mode)
   MoveObj = false;
 
   // @robinsch: model selector support
+#ifdef NOGGIT_HAS_SCRIPTING
   if (terrainMode != editing_mode::scripting)
+#endif
     _world->reset_selection();
 
   _rotation_editor_need_update = true;
