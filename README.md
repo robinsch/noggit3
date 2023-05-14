@@ -92,6 +92,12 @@ directory containing noggit.exe, i.e. `CMAKE_INSTALL_PREFIX` configured.
 * release: Qt5Core, Qt5OpenGL, Qt5Widgets, Qt5Gui
 * debug: Qt5Cored, Qt5OpenGLd, Qt5Widgetsd, Qt5Guid 
 
+and copy the following DLLs from from `C:/Qt/X.X/msvcXXXX/plugins/platforms` into the `platforms`
+directory containing noggit.exe
+
+* release: qdirect2d, qminimal, qoffscreen, qwindows
+* debug: qdirect2dd, qminimald, qoffscreend, qwindowsd
+
 * If using scripting, you will also need to copy `<Lua-install>/src/lua51.dll` to `CMAKE_INSTALL_PREFIX`
 
 ## Linux ##
