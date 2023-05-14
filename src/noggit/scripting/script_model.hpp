@@ -55,6 +55,8 @@ namespace noggit
       , std::vector<model>& vec
     );
 
+    void collect_models(script_context* ctx, World* world, std::vector<model>& vec);
+
     void register_model(script_context * state);
   } // namespace scripting
 } // namespace noggit

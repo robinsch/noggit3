@@ -14,7 +14,13 @@ namespace noggit
 {
   namespace scripting
   {
-    selection::selection(script_context * ctx, std::string const&,math::vector_3d const& point1, math::vector_3d const& point2)
+      selection::selection(script_context* ctx, std::string const& caller) : script_object(ctx), _world(ctx->world())
+      {
+          _min = math::vector_3d();
+          _max = math::vector_3d();
+      }
+
+      selection::selection(script_context * ctx, std::string const&,math::vector_3d const& point1, math::vector_3d const& point2)
       : script_object(ctx)
       , _world(ctx->world())
     {
@@ -108,7 +114,12 @@ namespace noggit
     std::vector<model> selection::models_raw()
     {
       std::vector<model> models;
-      collect_models(state(), world(), _min, _max, models);
+
+      if (_min.x && _min.y && _min.z && _max.x && _max.y && _max.z)
+          collect_models(state(), world(), _min, _max, models);
+      else
+          collect_models(state(), world(), models);
+
       return models;
     }
 
@@ -178,6 +189,11 @@ namespace noggit
         return std::make_shared<selection>(state, "select_between",
           point1,point2);
       });
+
+        state->set_function("select_world", [state]()
+        {
+            return std::make_shared<selection>(state, "select_world");
+        });
     }
   } // namespace scripting
 } // namespace noggit

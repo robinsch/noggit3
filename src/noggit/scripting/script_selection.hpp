@@ -27,6 +27,10 @@ namespace noggit
     class selection: public script_object
     {
     public:
+        selection(script_context* ctx
+            , std::string const& caller
+        );
+
       selection( script_context * ctx
                , std::string const& caller
                , math::vector_3d const& point1

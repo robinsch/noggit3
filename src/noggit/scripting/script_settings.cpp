@@ -59,6 +59,8 @@ namespace noggit
         _radius = v;
         QSignalBlocker const blocker(_radius_slider);
         _radius_slider->setSliderPosition((int)std::round(v));
+        if (v)
+            _radius_spin->setDisabled(false);
         set_json (OUTER_RADIUS_PATH, v);
       });
 
@@ -66,6 +68,8 @@ namespace noggit
         _radius = v;
         QSignalBlocker const blocker(_radius_spin);
         _radius_spin->setValue(v);
+        if (v)
+            _radius_slider->setDisabled(false);
         set_json (OUTER_RADIUS_PATH, v);
       });
 
@@ -73,6 +77,8 @@ namespace noggit
         _inner_radius = v;
         QSignalBlocker const blocker(_inner_radius_slider);
         _inner_radius_slider->setSliderPosition((int)std::round(v * 100));
+        if (v)
+            _inner_radius_spin->setDisabled(false);
         set_json (INNER_RADIUS_PATH, v);
       });
 
@@ -80,6 +86,8 @@ namespace noggit
         _inner_radius = v / 100.0f;
         QSignalBlocker const blocker(_inner_radius_spin);
         _inner_radius_spin->setValue(_inner_radius);
+        if (v)
+            _inner_radius_slider->setDisabled(false);
         set_json (INNER_RADIUS_PATH, _inner_radius);
       });
     }
@@ -280,6 +288,13 @@ namespace noggit
     {
       _radius_spin->setValue(outerRadius);
       _radius_slider->setSliderPosition(outerRadius);
+
+      if (outerRadius <= 0.f)
+      {
+          _radius_spin->setDisabled(true);
+          _radius_slider->setDisabled(true);
+      }
+
       set_json (OUTER_RADIUS_PATH, outerRadius);
     }
 
@@ -287,6 +302,13 @@ namespace noggit
     {
       _inner_radius_spin->setValue(innerRadius);
       _inner_radius_slider->setSliderPosition(innerRadius*100);
+
+      if (innerRadius <= 0.f)
+      {
+          _inner_radius_spin->setDisabled(true);
+          _inner_radius_slider->setDisabled(true);
+      }
+
       set_json (INNER_RADIUS_PATH, innerRadius);
     }
 

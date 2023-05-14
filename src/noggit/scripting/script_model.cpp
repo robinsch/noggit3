@@ -198,6 +198,12 @@ namespace noggit
       });
     }
 
+    void collect_models(script_context* ctx, World* world, std::vector<model>& vec)
+    {
+        world->for_each_m2_instance([&](ModelInstance& mod) { vec.push_back(model(ctx, &mod)); });
+        world->for_each_wmo_instance([&](WMOInstance& mod) { vec.push_back(model(ctx, &mod)); });
+    }
+
     void register_model(script_context * state)
     {
       state->new_usertype<model>("model"

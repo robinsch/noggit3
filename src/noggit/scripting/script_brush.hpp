@@ -133,6 +133,8 @@ namespace noggit {
         script_brush,std::shared_ptr<script_brush_event>,on_right_hold);
       LUA_MEMBER_FUNC(
         script_brush,std::shared_ptr<script_brush_event>,on_right_release);
+      LUA_MEMBER_FUNC(
+          script_brush, std::shared_ptr<script_brush_event>, on_select);
 
     private:
       std::vector<std::shared_ptr<tag>> _tags;

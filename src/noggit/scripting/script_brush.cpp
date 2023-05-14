@@ -139,6 +139,14 @@ namespace noggit {
       {
         tag->add_to_settings();
       }
+
+      auto evt = std::make_shared<script_brush_event>(
+          tool()->get_settings()
+          , math::vector_3d()
+          , 0.f
+      );
+
+      on_select.call_if_exists("(brush_event)", evt);
     }
 
     void register_script_brush(script_context * state)
