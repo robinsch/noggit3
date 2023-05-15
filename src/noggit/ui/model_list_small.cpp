@@ -134,16 +134,22 @@ namespace noggit
                     : boost::get<selected_wmo_type>(selection)->pos
                     ;
 
+                float sel_scale = selection.which() == eEntry_Model
+                    ? boost::get<selected_model_type>(selection)->scale
+                    : 1.f
+                    ;
+
                 setWindowTitle(QString("Spawns: ") + QString(sel_filename.c_str()));
 
                 // @robinsch: show selected model first
                 {
                     QListWidgetItem* list_item = new QListWidgetItem(_model_list);
-                    list_item->setText(QString("** ID %1, pos: (%2, %3, %4) **")
+                    list_item->setText(QString("** ID %1, pos: (%2, %3, %4) scale: %5 **")
                         .arg(sel_uid)
                         .arg(ZEROPOINT - sel_pos.z)
                         .arg(ZEROPOINT - sel_pos.x)
                         .arg(sel_pos.y)
+                        .arg(sel_scale)
                     );
 
                     updateWidget();
@@ -161,10 +167,11 @@ namespace noggit
                         continue;
 
                     QListWidgetItem* list_item = new QListWidgetItem(_model_list);
-                    list_item->setText(QString("pos: (%2, %3, %4)")
+                    list_item->setText(QString("pos: (%2, %3, %4) scale: %5")
                         .arg(ZEROPOINT - model->pos.z)
                         .arg(ZEROPOINT - model->pos.x)
                         .arg(model->pos.y)
+                        .arg(model->scale)
                     );
                     list_item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
